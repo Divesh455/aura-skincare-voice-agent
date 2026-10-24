@@ -46,6 +46,12 @@
   height: 0 !important;
 }
 
+html {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-surface-bg);
@@ -53,6 +59,16 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  position: relative;
+}
+
+#root, .app-layout {
+  overflow-x: hidden !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 button, input {
@@ -3590,53 +3606,73 @@ button, input {
 
 /* --- 3. Tablets & Mobile Landscape (max-width: 768px) --- */
 @media (max-width: 768px) {
+  html, body, #root, .app-layout {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
   .top-notice-bar {
-    padding: 6px 12px;
+    padding: 6px 10px;
     font-size: 0.7rem;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .top-notice-container {
-    gap: 12px;
-    justify-content: flex-start;
+    justify-content: center !important;
+    text-align: center;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 8px;
   }
 
-  /* Header Clean & Uncluttered */
+  .notice-right {
+    display: none !important;
+  }
+
+  /* Header Clean, Responsive & Strictly Contained */
   .main-header {
-    padding: 10px 14px;
+    padding: 8px 10px;
     position: sticky;
     top: 0;
     z-index: 90;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden;
   }
 
   .header-container {
-    gap: 8px;
+    gap: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .brand-logo {
-    gap: 7px;
+    gap: 6px;
+    flex-shrink: 0;
   }
 
   .brand-emblem {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
     flex-shrink: 0;
   }
 
   .brand-title {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     line-height: 1;
   }
 
   .brand-subtitle {
-    font-size: 0.52rem;
-    letter-spacing: 0.16em;
+    display: none !important;
   }
 
   /* Hide wide desktop navbar */
@@ -3647,7 +3683,14 @@ button, input {
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
+    flex-shrink: 0;
+    max-width: calc(100% - 85px);
+  }
+
+  /* Hide separate header logout button on mobile to prevent overflow (already inside user menu dropdown) */
+  .header-logout-btn {
+    display: none !important;
   }
 
   /* Hide chat text button from mobile header to prevent clutter */
@@ -3657,10 +3700,11 @@ button, input {
 
   /* Compact voice call button in mobile header */
   .bot-nav-btn.call-type {
-    padding: 5px 10px;
-    font-size: 0.72rem;
-    gap: 5px;
+    padding: 5px 8px;
+    font-size: 0.7rem;
+    gap: 4px;
     border-radius: 18px;
+    flex-shrink: 0;
   }
 
   .call-btn-full-text {
@@ -3673,19 +3717,29 @@ button, input {
   }
 
   .icon-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.95rem;
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+    flex-shrink: 0;
   }
 
   .user-account-badge {
-    padding: 3px 8px;
-    font-size: 0.7rem;
-    gap: 4px;
+    padding: 3px 6px;
+    font-size: 0.68rem;
+    gap: 3px;
+    max-width: 78px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
   }
 
   /* --- HERO SECTION ON MOBILE --- */
   .hero-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
     padding-bottom: 30px;
   }
 
@@ -3778,18 +3832,24 @@ button, input {
 
   /* --- 4-PILL FEATURES STRIP ON MOBILE (COMPACT 2x2 GRID) --- */
   .floating-features-bar {
-    padding: 0 14px;
+    padding: 0 12px;
     margin-top: -18px;
     position: relative;
     z-index: 10;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .features-card {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
-    padding: 14px 12px !important;
+    gap: 8px !important;
+    padding: 12px 10px !important;
     border-radius: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .feature-col {
