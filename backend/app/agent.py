@@ -1,4 +1,5 @@
 import logging
+import os
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
@@ -55,8 +56,11 @@ Core Policy & Tool Rules:
     Kabhi mat bolo ki call transfer ho rahi hai ya connected hain.
 """
 
+google_api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+
 llm = ChatGoogleGenerativeAI(
     model="gemini-3.5-flash-lite",
+    google_api_key=google_api_key,
     max_retries=1,
 )
 

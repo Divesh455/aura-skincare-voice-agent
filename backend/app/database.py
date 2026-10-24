@@ -14,6 +14,8 @@ if not DATABASE_URL:
         "DATABASE_URL is missing. Check that your backend/.env file exists."
     )
 
+DATABASE_URL = DATABASE_URL.strip().strip("\"'")
+
 # Normalize postgres:// to postgresql:// for SQLAlchemy 2.0 (standard Neon format)
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
