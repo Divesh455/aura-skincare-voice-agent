@@ -434,8 +434,19 @@ export default function App() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+
       if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error(
+            `Backend endpoint not found (404) at: ${API_URL}${endpoint}. Check your Vercel VITE_API_URL environment variable and ensure you redeployed.`
+          );
+        }
         throw new Error(data.detail || "Authentication failed. Please check your credentials.");
       }
 

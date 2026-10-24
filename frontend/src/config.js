@@ -2,7 +2,18 @@
 // Aura Skincare Voice Assistant Configuration
 // =============================================================================
 
-export const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+function cleanApiUrl(url) {
+  if (!url || typeof url !== "string") return "http://127.0.0.1:8000";
+  let cleaned = url.trim();
+  cleaned = cleaned.replace(/\/+$/, "");
+  cleaned = cleaned.replace(/\/api$/, "");
+  return cleaned || "http://127.0.0.1:8000";
+}
+
+export const API_URL = cleanApiUrl(import.meta.env.VITE_API_URL);
+if (typeof window !== "undefined") {
+  console.log("🌐 [Aura Skincare] Active Backend API URL:", API_URL);
+}
 
 /**
  * Customer Care Phone Number Configuration.
