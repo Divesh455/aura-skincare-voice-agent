@@ -686,9 +686,14 @@ export default function App() {
     const Recognition = getSpeechRecognition();
     if (!Recognition) return null;
 
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent || ""
+    );
+
     const recognition = new Recognition();
     recognition.lang = speechLangRef.current || speechLang || "en-IN";
-    recognition.continuous = true;
+    // On mobile, continuous=false prevents Android/iOS speech services from hanging after pauses
+    recognition.continuous = !isMobileDevice;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
@@ -697,7 +702,7 @@ export default function App() {
       isRecognitionRunningRef.current = true;
       setIsMicListening(true);
       setVoiceError("");
-      console.log(`[Voice] Recognition started (${recognition.lang})`);
+      console.log(`[Voice] Recognition started (${recognition.lang}, mobile: ${isMobileDevice})`);
       if (callActiveRef.current && callStatusRef.current !== "speaking" && callStatusRef.current !== "thinking") {
         updateCallStatus("listening");
       }
@@ -780,16 +785,30 @@ export default function App() {
     };
 
     recognition.onerror = (event) => {
+      console.warn("[Voice] Recognition error event:", event.error);
+
+      // On mobile devices, "no-speech" or "aborted" is expected when pausing or between turns
+      // Do NOT kill the recognition state or set an error! Let onend auto-revive it!
+      if (event.error === "no-speech" || event.error === "aborted") {
+        return;
+      }
+
+      if (event.error === "language-not-supported") {
+        console.warn("[Voice] Language not supported, falling back to en-US / device default");
+        speechLangRef.current = navigator.language || "en-US";
+        setSpeechLang(speechLangRef.current);
+        return;
+      }
+
       isStartingRecognitionRef.current = false;
       isRecognitionRunningRef.current = false;
       setIsMicListening(false);
-      console.warn("[Voice] Recognition error:", event.error);
 
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        setVoiceError("Microphone access was denied. Please click the lock or camera/mic icon in your browser URL bar to allow microphone access.");
+        setVoiceError("Microphone access was denied. Please allow microphone in your browser URL bar.");
         showToast("⚠️ Microphone access denied. Please allow microphone in browser.");
       } else if (event.error === "network") {
-        setVoiceError("Speech recognition network timeout. Ensure internet connection is active or use typed input.");
+        console.warn("Mobile speech recognition network glitch. Will auto-retry.");
       } else if (event.error === "audio-capture") {
         setVoiceError("No microphone detected. Please check your system audio input device.");
       }
@@ -799,6 +818,23 @@ export default function App() {
       isStartingRecognitionRef.current = false;
       isRecognitionRunningRef.current = false;
       setIsMicListening(false);
+
+      // CRITICAL FOR MOBILE: If the mobile speech recognizer ended and captured speech is waiting,
+      // submit it immediately so the user's speech is never lost on Android/iOS!
+      if (
+        callActiveRef.current &&
+        callStatusRef.current === "listening" &&
+        !currentAudioRef.current &&
+        pendingTurnSpeechRef.current &&
+        pendingTurnSpeechRef.current.trim().length >= 2
+      ) {
+        const textToSubmit = pendingTurnSpeechRef.current.trim();
+        clearTimeout(turnSilenceTimerRef.current);
+        pendingTurnSpeechRef.current = "";
+        setUserSpeakingTranscript("");
+        sendVoiceCallMessage(textToSubmit);
+        return;
+      }
 
       if (
         callActiveRef.current &&
@@ -816,7 +852,7 @@ export default function App() {
           ) {
             safeStartRecognition();
           }
-        }, 150);
+        }, isMobileDevice ? 250 : 120);
       }
     };
 
@@ -917,12 +953,15 @@ export default function App() {
     clearTimeout(turnSilenceTimerRef.current);
     if (callActiveRef.current) {
       updateCallStatus("listening");
-      // Allow 200ms for speaker audio reverberation in the room to decay before opening microphone
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent || ""
+      );
+      const switchDelay = isMobileDevice ? 400 : 200;
       setTimeout(() => {
         if (callActiveRef.current && callStatusRef.current === "listening" && !currentAudioRef.current) {
           safeStartRecognition();
         }
-      }, 200);
+      }, switchDelay);
     } else {
       updateCallStatus("idle");
     }
@@ -1073,40 +1112,52 @@ export default function App() {
       return;
     }
 
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent || ""
+    );
+
     // Prompt & connect microphone with real-time level analyzer
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       try {
         stopMicMonitor();
         const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        micStreamRef.current = micStream;
 
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) {
-          const audioCtx = new AudioContextClass();
-          audioContextRef.current = audioCtx;
-          const analyser = audioCtx.createAnalyser();
-          analyser.fftSize = 256;
-          analyserRef.current = analyser;
-          const source = audioCtx.createMediaStreamSource(micStream);
-          source.connect(analyser);
+        // On mobile devices, holding an open MediaStream locks the mobile hardware microphone
+        // and starves webkitSpeechRecognition. We immediately stop the tracks so SpeechRecognition
+        // has 100% exclusive access to the microphone on mobile!
+        if (isMobileDevice) {
+          micStream.getTracks().forEach((track) => track.stop());
+          micStreamRef.current = null;
+        } else {
+          micStreamRef.current = micStream;
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            const audioCtx = new AudioContextClass();
+            audioContextRef.current = audioCtx;
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            analyserRef.current = analyser;
+            const source = audioCtx.createMediaStreamSource(micStream);
+            source.connect(analyser);
 
-          const dataArray = new Uint8Array(analyser.frequencyBinCount);
-          const checkVolume = () => {
-            if (!callActiveRef.current) return;
-            analyser.getByteFrequencyData(dataArray);
-            let sum = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-              sum += dataArray[i];
-            }
-            const avg = sum / dataArray.length;
-            const level = Math.min(100, Math.round((avg / 64) * 100));
-            setMicAudioLevel(level);
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            const checkVolume = () => {
+              if (!callActiveRef.current) return;
+              analyser.getByteFrequencyData(dataArray);
+              let sum = 0;
+              for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+              }
+              const avg = sum / dataArray.length;
+              const level = Math.min(100, Math.round((avg / 64) * 100));
+              setMicAudioLevel(level);
+              animFrameRef.current = requestAnimationFrame(checkVolume);
+            };
             animFrameRef.current = requestAnimationFrame(checkVolume);
-          };
-          animFrameRef.current = requestAnimationFrame(checkVolume);
+          }
         }
       } catch (micErr) {
-        setVoiceError("Microphone access was denied. Please click the lock or camera/mic icon in your browser URL bar to allow microphone access.");
+        setVoiceError("Microphone access was denied. Please allow microphone in your mobile browser settings.");
         showToast("⚠️ Microphone access required to speak with Aria.");
         return;
       }
@@ -2224,9 +2275,12 @@ export default function App() {
                 >
                   {[20, 50, 80, 100, 75, 45, 25].map((baseH, idx) => {
                     let barH = undefined;
-                    if (callActive && (userSpeakingTranscript || micAudioLevel > 6)) {
-                      const boost = userSpeakingTranscript ? 1.2 : 0.85;
-                      barH = Math.max(8, Math.min(42, Math.round((baseH / 100) * Math.max(16, micAudioLevel * boost))));
+                    if (callActive && userSpeakingTranscript) {
+                      // Dynamic dancing wave bars while user is speaking
+                      const animatedBoost = [0.9, 1.2, 1.5, 1.8, 1.4, 1.1, 0.8][idx % 7];
+                      barH = Math.min(46, Math.max(12, Math.round(baseH * 0.42 * animatedBoost)));
+                    } else if (callActive && micAudioLevel > 6) {
+                      barH = Math.max(8, Math.min(42, Math.round((baseH / 100) * (micAudioLevel * 0.85))));
                     }
                     return (
                       <div
@@ -2247,21 +2301,23 @@ export default function App() {
                   <div className="studio-mic-status-row">
                     <div className={`mic-live-pill ${isMicListening ? "active" : "standby"}`}>
                       <span className="mic-dot"></span>
-                      <span>{isMicListening ? "Microphone Live & Tracking" : "Mic Standby"}</span>
+                      <span>{isMicListening ? (userSpeakingTranscript ? "Hearing Speech..." : "Microphone Active") : "Mic Standby"}</span>
                     </div>
 
-                    <div className="mic-level-container" title={`Microphone input volume: ${micAudioLevel}%`}>
-                      <span style={{ fontSize: "0.68rem", fontWeight: 700 }}>Mic Vol:</span>
+                    <div className="mic-level-container" title="Microphone tracking status">
+                      <span style={{ fontSize: "0.68rem", fontWeight: 700 }}>Mic:</span>
                       <div className="mic-level-track">
                         <div
                           className="mic-level-fill"
                           style={{
-                            width: `${Math.max(4, micAudioLevel)}%`,
-                            background: micAudioLevel > 15 ? "#55EFC4" : "#A8E6CF"
+                            width: userSpeakingTranscript ? "85%" : `${Math.max(4, micAudioLevel)}%`,
+                            background: userSpeakingTranscript || micAudioLevel > 15 ? "#55EFC4" : "#A8E6CF"
                           }}
                         />
                       </div>
-                      <span style={{ fontSize: "0.68rem" }}>{micAudioLevel}%</span>
+                      <span style={{ fontSize: "0.68rem" }}>
+                        {userSpeakingTranscript ? "Speaking" : micAudioLevel > 0 ? `${micAudioLevel}%` : (isMicListening ? "Active" : "Idle")}
+                      </span>
                     </div>
 
                     {!isMicListening && callStatus === "listening" && (
@@ -2271,7 +2327,7 @@ export default function App() {
                         onClick={() => safeStartRecognition()}
                         title="Click to restart speech recognition"
                       >
-                        <span>🎙️ Click to Speak</span>
+                        <span>🎙️ Tap to Speak</span>
                       </button>
                     )}
                   </div>
