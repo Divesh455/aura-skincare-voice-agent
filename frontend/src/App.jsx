@@ -1415,7 +1415,8 @@ export default function App() {
               title="Start spoken Voice Call with Aria AI Agent"
             >
               <span className="pulse-mic"></span>
-              <span>Live Agent Call</span>
+              <span className="call-btn-full-text">Live Agent Call</span>
+              <span className="call-btn-mobile-text">Call Aria</span>
             </button>
 
             {/* Search Button */}
@@ -1543,26 +1544,28 @@ export default function App() {
             </p>
 
             <div className="hero-cta-group">
-              <a href="#shop" className="btn-pill-primary">
+              <a href="#shop" className="btn-pill-primary hero-shop-cta">
                 <span>SHOP NOW</span>
                 <span>→</span>
               </a>
-              <button
-                type="button"
-                className="btn-pill-secondary"
-                onClick={() => setChatDrawerOpen(true)}
-              >
-                <span>💬</span>
-                <span>TEXT CHAT</span>
-              </button>
-              <button
-                type="button"
-                className="btn-pill-aria"
-                onClick={startCall}
-              >
-                <span>🎙️</span>
-                <span>LIVE VOICE CALL</span>
-              </button>
+              <div className="hero-sub-ctas">
+                <button
+                  type="button"
+                  className="btn-pill-secondary"
+                  onClick={() => setChatDrawerOpen(true)}
+                >
+                  <span>💬</span>
+                  <span>TEXT CHAT</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-pill-aria"
+                  onClick={startCall}
+                >
+                  <span>🎙️</span>
+                  <span>LIVE VOICE CALL</span>
+                </button>
+              </div>
             </div>
           </div>
 

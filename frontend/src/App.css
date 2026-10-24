@@ -3591,387 +3591,547 @@ button, input {
 /* --- 3. Tablets & Mobile Landscape (max-width: 768px) --- */
 @media (max-width: 768px) {
   .top-notice-bar {
-    padding: 6px 14px;
-    font-size: 0.72rem;
+    padding: 6px 12px;
+    font-size: 0.7rem;
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
   }
 
   .top-notice-container {
-    gap: 14px;
+    gap: 12px;
     justify-content: flex-start;
   }
 
+  /* Header Clean & Uncluttered */
   .main-header {
-    padding: 12px 16px;
+    padding: 10px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 90;
   }
 
   .header-container {
-    gap: 10px;
+    gap: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .brand-logo {
-    gap: 8px;
+    gap: 7px;
   }
 
   .brand-emblem {
     width: 32px;
     height: 32px;
-    font-size: 1.05rem;
+    font-size: 1rem;
+    flex-shrink: 0;
   }
 
   .brand-title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
+    line-height: 1;
   }
 
   .brand-subtitle {
-    font-size: 0.55rem;
+    font-size: 0.52rem;
     letter-spacing: 0.16em;
   }
 
-  /* Hide desktop horizontal menu on tablets/phones to eliminate overflow */
+  /* Hide wide desktop navbar */
   .nav-links {
-    display: none;
+    display: none !important;
   }
 
   .header-actions {
-    gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  .bot-nav-btn {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    border-radius: 20px;
+  /* Hide chat text button from mobile header to prevent clutter */
+  .bot-nav-btn.chat-type {
+    display: none !important;
   }
 
-  .bot-nav-btn.chat-type span:last-child {
-    display: inline-block;
+  /* Compact voice call button in mobile header */
+  .bot-nav-btn.call-type {
+    padding: 5px 10px;
+    font-size: 0.72rem;
+    gap: 5px;
+    border-radius: 18px;
   }
 
-  .user-account-badge {
-    padding: 4px 8px;
-    font-size: 0.74rem;
+  .call-btn-full-text {
+    display: none !important;
+  }
+
+  .call-btn-mobile-text {
+    display: inline !important;
+    font-weight: 700;
   }
 
   .icon-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 1rem;
-  }
-
-  /* Hero adjustments */
-  .hero-grid {
-    padding: 24px 16px 40px;
-    gap: 24px;
-  }
-
-  .hero-eyebrow {
-    font-size: 0.7rem;
-    margin-bottom: 10px;
-  }
-
-  .hero-headline {
-    font-size: clamp(2rem, 7vw, 2.5rem);
-    line-height: 1.18;
-    margin-bottom: 14px;
-  }
-
-  .hero-subtitle {
-    font-size: 0.9rem;
-    margin-bottom: 24px;
-  }
-
-  .hero-cta-group {
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-  }
-
-  .hero-cta-group button,
-  .hero-cta-group a {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 20px;
-    font-size: 0.84rem;
-  }
-
-  /* Features */
-  .features-strip {
-    padding: 0 16px;
-    margin-top: -24px;
-  }
-
-  .features-card {
-    grid-template-columns: 1fr;
-    padding: 18px 20px;
-    gap: 16px;
-  }
-
-  /* Category Grid */
-  .category-section {
-    padding: 0 16px;
-    margin: 40px auto 45px;
-  }
-
-  .categories-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .category-circle {
-    width: 90px;
-    height: 90px;
-    margin-bottom: 8px;
-  }
-
-  .category-circle-icon {
-    font-size: 1.7rem;
-  }
-
-  .category-name {
-    font-size: 0.74rem;
-    letter-spacing: 0.05em;
-  }
-
-  /* Featured Products Grid */
-  .featured-section {
-    padding: 0 16px;
-    margin: 45px auto;
-  }
-
-  .section-header-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .section-title-wrap h2 {
-    font-size: 1.7rem;
-  }
-
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-
-  .product-info {
-    padding: 12px 10px 14px;
-  }
-
-  .product-name {
-    font-size: 0.84rem;
-    min-height: auto;
-  }
-
-  .product-price {
-    font-size: 0.86rem;
-  }
-
-  .add-to-cart-btn {
-    padding: 8px 12px;
-    font-size: 0.74rem;
-  }
-
-  /* AI Experience Section */
-  .ai-bot-card {
-    padding: 24px 20px;
-    border-radius: 20px;
-  }
-
-  .ai-bot-card h3 {
-    font-size: 1.35rem;
-  }
-
-  /* Voice Studio Call Modal */
-  .voice-studio-card {
-    width: 95vw;
-    max-width: 95vw;
-    max-height: 90vh;
-    border-radius: 20px;
-    margin: auto;
-  }
-
-  .voice-studio-header {
-    padding: 10px 14px;
-  }
-
-  .studio-avatar-circle {
-    width: 36px;
-    height: 36px;
-    font-size: 1.15rem;
-  }
-
-  .studio-title-area h3 {
+    width: 32px;
+    height: 32px;
     font-size: 0.95rem;
   }
 
-  .studio-soundwave-wrap {
-    height: 32px;
+  .user-account-badge {
+    padding: 3px 8px;
+    font-size: 0.7rem;
     gap: 4px;
-    margin: 4px 0 8px;
+  }
+
+  /* --- HERO SECTION ON MOBILE --- */
+  .hero-section {
+    padding-bottom: 30px;
+  }
+
+  .hero-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px 14px 34px;
+    gap: 18px;
+    min-height: auto;
+  }
+
+  .hero-content {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+  }
+
+  .hero-headline {
+    font-size: clamp(1.9rem, 7vw, 2.3rem);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+
+  .hero-flourish {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  .hero-subtitle {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    margin: 0 auto 18px;
+    max-width: 330px;
+  }
+
+  /* Hero CTA: Shop Now full width, Chat & Call side-by-side */
+  .hero-cta-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .hero-shop-cta {
+    width: 100% !important;
+    padding: 11px 18px !important;
+    font-size: 0.82rem !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+  }
+
+  .hero-sub-ctas {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .hero-sub-ctas button {
+    width: 100% !important;
+    padding: 9px 8px !important;
+    font-size: 0.74rem !important;
+    justify-content: center !important;
+    gap: 5px !important;
+  }
+
+  .hero-image-wrap {
+    width: 100%;
+    max-width: 320px;
+    margin: 8px auto 0;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .hero-model-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 18px;
+  }
+
+  /* --- 4-PILL FEATURES STRIP ON MOBILE (COMPACT 2x2 GRID) --- */
+  .floating-features-bar {
+    padding: 0 14px;
+    margin-top: -18px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .features-card {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    padding: 14px 12px !important;
+    border-radius: 16px !important;
+  }
+
+  .feature-col {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .feature-icon-circle {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 1.05rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .feature-texts h4 {
+    font-size: 0.75rem !important;
+    margin-bottom: 1px !important;
+    line-height: 1.2 !important;
+  }
+
+  .feature-texts p {
+    font-size: 0.64rem !important;
+    line-height: 1.1 !important;
+  }
+
+  /* --- CATEGORIES GRID ON MOBILE --- */
+  .category-section {
+    padding: 0 14px;
+    margin: 32px auto 38px;
+  }
+
+  .section-ribbon-heading {
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+
+  .section-ribbon-heading span {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+  }
+
+  .heading-line {
+    width: 36px;
+  }
+
+  .categories-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .category-circle {
+    width: 82px !important;
+    height: 82px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .category-circle-icon {
+    font-size: 1.55rem !important;
+  }
+
+  .category-name {
+    font-size: 0.7rem !important;
+    letter-spacing: 0.04em !important;
+  }
+
+  .category-action {
+    font-size: 0.62rem !important;
+  }
+
+  /* --- FEATURED PRODUCTS GRID ON MOBILE --- */
+  .featured-section {
+    padding: 0 14px;
+    margin: 34px auto;
+  }
+
+  .section-header-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .section-title-wrap h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .view-all-link {
+    padding: 5px 12px;
+    font-size: 0.7rem;
+  }
+
+  .products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .product-card {
+    border-radius: 14px !important;
+  }
+
+  .product-badge {
+    top: 6px !important;
+    left: 6px !important;
+    font-size: 0.58rem !important;
+    padding: 2px 6px !important;
+  }
+
+  .wishlist-btn {
+    top: 6px !important;
+    right: 6px !important;
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .product-info {
+    padding: 8px 8px 12px !important;
+  }
+
+  .product-category {
+    font-size: 0.6rem !important;
+  }
+
+  .product-name {
+    font-size: 0.8rem !important;
+    min-height: 32px !important;
+    line-height: 1.25 !important;
+  }
+
+  .product-price {
+    font-size: 0.82rem !important;
+  }
+
+  .add-to-cart-btn {
+    padding: 6px 8px !important;
+    font-size: 0.7rem !important;
+    border-radius: 20px !important;
+  }
+
+  /* --- AI EXPERIENCE CARDS ON MOBILE --- */
+  .ai-experience-section {
+    padding: 34px 14px !important;
+  }
+
+  .ai-experience-heading h2 {
+    font-size: 1.55rem !important;
+    line-height: 1.2 !important;
+  }
+
+  .ai-experience-heading p {
+    font-size: 0.82rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 22px !important;
+  }
+
+  .ai-experience-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    max-width: 100% !important;
+  }
+
+  .ai-bot-card {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  .bot-icon-circle {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.35rem !important;
+  }
+
+  .bot-badge {
+    font-size: 0.64rem !important;
+    padding: 4px 9px !important;
+  }
+
+  .ai-bot-card h3 {
+    font-size: 1.25rem !important;
+  }
+
+  .ai-bot-card p {
+    font-size: 0.8rem !important;
+    line-height: 1.45 !important;
+    margin-bottom: 14px !important;
+  }
+
+  .bot-features-list {
+    gap: 6px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .bot-features-list li {
+    font-size: 0.76rem !important;
+    gap: 8px !important;
+  }
+
+  .bot-card-btn {
+    padding: 10px 16px !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* --- FLOATING ACTION DOCK ON MOBILE --- */
+  .dual-floating-dock {
+    bottom: 12px !important;
+    right: 12px !important;
+    padding: 3px !important;
+    gap: 5px !important;
+    border-radius: 25px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .dock-btn {
+    padding: 6px 11px !important;
+    font-size: 0.72rem !important;
+    gap: 5px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Bottom clearance so floating dock never covers content */
+  .glow-app {
+    padding-bottom: 55px !important;
+  }
+
+  /* --- VOICE CALL STUDIO MODAL ON MOBILE --- */
+  .voice-studio-card {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 88vh !important;
+    border-radius: 18px !important;
+  }
+
+  .voice-studio-header {
+    padding: 9px 12px !important;
+  }
+
+  .studio-avatar-circle {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 1.1rem !important;
+  }
+
+  .studio-title-area h3 {
+    font-size: 0.9rem !important;
+  }
+
+  .studio-soundwave-wrap {
+    height: 28px !important;
+    gap: 3px !important;
+    margin: 4px 0 6px !important;
   }
 
   .studio-soundwave-bar {
-    width: 4px;
+    width: 3.5px !important;
   }
 
   .voice-controls-bar {
-    padding: 10px 14px;
-    gap: 12px;
+    padding: 8px 12px !important;
+    gap: 10px !important;
   }
 
   .control-circle-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 1.1rem;
+    width: 42px !important;
+    height: 42px !important;
+    font-size: 1.05rem !important;
   }
 
   .control-circle-btn.end-btn {
-    padding: 0 16px;
-    font-size: 0.8rem;
-  }
-
-  /* Floating Action Buttons Stacking to prevent overlaps */
-  .phone-call-fab {
-    right: 14px !important;
-    bottom: 82px !important;
-    padding: 9px 14px !important;
+    padding: 0 14px !important;
     font-size: 0.76rem !important;
-    border-radius: 25px !important;
   }
 
-  .chatbot-fab {
-    right: 14px !important;
-    bottom: 16px !important;
-    width: 50px !important;
-    height: 50px !important;
-    font-size: 1.3rem !important;
-  }
-
-  /* Chatbot Drawer Mobile Fit */
-  .chatbot-window {
-    width: 94vw !important;
-    max-width: 94vw !important;
-    right: 3vw !important;
-    bottom: 10px !important;
-    height: 80vh !important;
-    max-height: 80vh !important;
-    border-radius: 20px !important;
-  }
-
-  /* Modal Cards */
+  /* Modals */
   .modal-card {
     width: 94vw !important;
     max-width: 94vw !important;
-    padding: 20px 16px !important;
-    border-radius: 20px !important;
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
   }
 
   .cart-drawer {
     width: 92vw !important;
     max-width: 92vw !important;
   }
+
+  .chatbot-window {
+    width: 94vw !important;
+    max-width: 94vw !important;
+    right: 3vw !important;
+    bottom: 8px !important;
+    height: 80vh !important;
+    border-radius: 18px !important;
+  }
 }
 
-/* --- 4. Compact Phones (max-width: 480px) --- */
+/* --- 4. Extra Small Phones (max-width: 480px) --- */
 @media (max-width: 480px) {
   .brand-title {
-    font-size: 1.15rem;
+    font-size: 1.1rem !important;
   }
 
   .brand-subtitle {
-    display: none;
-  }
-
-  .bot-nav-btn {
-    padding: 5px 8px;
-    font-size: 0.7rem;
+    display: none !important;
   }
 
   .hero-headline {
-    font-size: 1.85rem;
-    line-height: 1.2;
-  }
-
-  .hero-flourish {
-    font-size: 1rem;
-    margin-bottom: 10px;
+    font-size: 1.8rem !important;
+    line-height: 1.18 !important;
   }
 
   .categories-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
   }
 
   .category-circle {
-    width: 80px;
-    height: 80px;
+    width: 74px !important;
+    height: 74px !important;
   }
 
   .category-circle-icon {
-    font-size: 1.45rem;
+    font-size: 1.4rem !important;
   }
 
   .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .product-badge {
-    top: 8px;
-    left: 8px;
-    font-size: 0.6rem;
-    padding: 2px 7px;
-  }
-
-  .wishlist-btn {
-    top: 8px;
-    right: 8px;
-    width: 28px;
-    height: 28px;
-    font-size: 0.85rem;
-  }
-
-  .product-info {
-    padding: 8px 6px 10px;
-  }
-
-  .product-name {
-    font-size: 0.78rem;
-  }
-
-  .product-price {
-    font-size: 0.8rem;
-  }
-
-  .add-to-cart-btn {
-    padding: 6px 8px;
-    font-size: 0.7rem;
-  }
-
-  .studio-mic-status-row {
-    font-size: 0.68rem;
-    gap: 6px;
-  }
-
-  .mic-live-pill {
-    padding: 2px 8px;
-    font-size: 0.68rem;
-  }
-
-  .mic-level-container {
-    padding: 2px 8px;
-    font-size: 0.66rem;
-  }
-
-  .mic-level-track {
-    width: 36px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 
   .footer-grid {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .call-btn-mobile-text {
+    display: none !important;
   }
 }
 
