@@ -1,0 +1,40 @@
+
+services:
+  db:
+    image: postgres:17
+    container_name: aura-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aura_db
+      POSTGRES_USER: aura_user
+      POSTGRES_PASSWORD: local_dev_change_me
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - aura_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aura_user -d aura_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: aura-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Asia/Kolkata
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - aura_n8ndata:/home/node/.n8n
+
+volumes:
+  aura_pgdata:
+  aura_n8ndata:

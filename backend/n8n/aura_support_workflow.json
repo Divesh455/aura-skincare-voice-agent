@@ -1,0 +1,109 @@
+{
+  "name": "Aura Skincare Post-Call Support Email Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "aura-support",
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "webhook-trigger-node",
+      "name": "Aura Call End Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "aura-call-end-webhook"
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "seconds"
+      },
+      "id": "wait-ten-seconds-node",
+      "name": "Wait Exactly 10 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "support-bot@auraskincare.com",
+        "toEmail": "={{ $json.body.support_email }}",
+        "subject": "=🚨 [Aura Support Alert] {{ $json.body.customer_intent }} - {{ $json.body.customer_name }} (Order: {{ $json.body.order_id || 'N/A' }})",
+        "html": "=<div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;'>\n  <h2 style='color: #2b6cb0; border-bottom: 2px solid #ebf8ff; padding-bottom: 8px;'>Aura Skincare Support Notification</h2>\n  <p><strong>Notice:</strong> This email was scheduled 10 seconds post-call as required for customer support review.</p>\n  <table style='width: 100%; border-collapse: collapse; margin-top: 15px;'>\n    <tr><td style='padding: 8px; border: 1px solid #cbd5e0; font-weight: bold; width: 35%;'>Customer Name</td><td style='padding: 8px; border: 1px solid #cbd5e0;'>{{ $json.body.customer_name }}</td></tr>\n    <tr><td style='padding: 8px; border: 1px solid #cbd5e0; font-weight: bold;'>Customer Email</td><td style='padding: 8px; border: 1px solid #cbd5e0;'>{{ $json.body.customer_email }}</td></tr>\n    <tr><td style='padding: 8px; border: 1px solid #cbd5e0; font-weight: bold;'>Call Session ID</td><td style='padding: 8px; border: 1px solid #cbd5e0;'><code>{{ $json.body.call_id }}</code></td></tr>\n    <tr><td style='padding: 8px; border: 1px solid #cbd5e0; font-weight: bold;'>Related Order ID</td><td style='padding: 8px; border: 1px solid #cbd5e0;'><strong>{{ $json.body.order_id || 'None identified' }}</strong></td></tr>\n    <tr><td style='padding: 8px; border: 1px solid #cbd5e0; font-weight: bold;'>Customer Intent</td><td style='padding: 8px; border: 1px solid #cbd5e0;'>{{ $json.body.customer_intent }}</td></tr>\n    <tr><td style='padding: 8px; border: 1px solid #cbd5e0; font-weight: bold;'>Resolution Status</td><td style='padding: 8px; border: 1px solid #cbd5e0;'><span style='color: {{ $json.body.resolution_status === \"resolved\" ? \"#276749\" : \"#c53030\" }}; font-weight: bold;'>{{ $json.body.resolution_status.toUpperCase() }}</span></td></tr>\n    <tr><td style='padding: 8px; border: 1px solid #cbd5e0; font-weight: bold;'>Human Support Needed</td><td style='padding: 8px; border: 1px solid #cbd5e0;'><span style='color: {{ $json.body.requires_human_support ? \"#c53030\" : \"#718096\" }}; font-weight: bold;'>{{ $json.body.requires_human_support ? 'YES - ACTION REQUIRED' : 'NO' }}</span></td></tr>\n  </table>\n  <h3 style='margin-top: 20px; color: #4a5568;'>Important Details</h3>\n  <blockquote style='background: #f7fafc; padding: 12px; border-left: 4px solid #4299e1; margin: 0;'>{{ $json.body.important_details }}</blockquote>\n  <h3 style='margin-top: 15px; color: #4a5568;'>Call Summary</h3>\n  <p style='background: #f7fafc; padding: 12px; border-radius: 4px;'>{{ $json.body.call_summary }}</p>\n  <hr style='margin-top: 25px; border: none; border-top: 1px solid #e2e8f0;' />\n  <p style='font-size: 12px; color: #a0aec0;'>Generated automatically by Aria Voice Agent & n8n 10-Second Delayed Dispatch Pipeline.</p>\n</div>"
+      },
+      "id": "send-email-node",
+      "name": "Send Support Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/webhooks/n8n/email-status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Aura-Webhook-Secret",
+              "value": "aura_n8n_secret_dev"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"interaction_id\": {{ $json.body.interaction_id }},\n  \"call_id\": \"{{ $json.body.call_id }}\",\n  \"status\": \"delivered\",\n  \"provider_message_id\": \"n8n_exec_\" + $execution.id\n}"
+      },
+      "id": "confirm-delivery-callback-node",
+      "name": "Confirm Delivery Callback to FastAPI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "Aura Call End Webhook": {
+      "main": [
+        [
+          {
+            "node": "Wait Exactly 10 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Exactly 10 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Send Support Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Support Email": {
+      "main": [
+        [
+          {
+            "node": "Confirm Delivery Callback to FastAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
