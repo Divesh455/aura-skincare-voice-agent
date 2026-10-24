@@ -33,6 +33,27 @@ def get_customer_orders(customer_id: int, db: Session) -> list[dict]:
     ]
 
 
+def _format_account_mismatch_error(normalized_id: str, customer_id: int, db: Session) -> dict:
+    """Format a secure, helpful account mismatch response providing the customer's own orders."""
+    own_orders = db.scalars(
+        select(Order.order_id).where(Order.customer_id == customer_id)
+    ).all()
+    orders_text = ", ".join(own_orders) if own_orders else "none"
+    return {
+        "success": False,
+        "eligible": False,
+        "is_account_mismatch": True,
+        "error": f"Order {normalized_id} does not belong to your account.",
+        "message": (
+            f"For customer privacy and account security, order {normalized_id} does not belong to your account. "
+            f"Your registered order(s) under this account are: {orders_text}. "
+            f"Please verify your order ID, or check if you placed the order with a different email/phone."
+        ),
+        "customer_orders": own_orders,
+        "order_id": normalized_id,
+    }
+
+
 def get_order_details(order_id: str, db: Session, customer_id: int | None = None) -> dict:
     """
     Look up an order by its order ID.
@@ -62,12 +83,7 @@ def get_order_details(order_id: str, db: Session, customer_id: int | None = None
 
     # If customer_id is supplied, verify ownership to prevent IDOR attacks
     if customer_id is not None and order.customer_id is not None and order.customer_id != customer_id:
-        return {
-            "success": False,
-            "error": (
-                f"Order {normalized_id} does not belong to your account."
-            ),
-        }
+        return _format_account_mismatch_error(normalized_id, customer_id, db)
 
     return {
         "success": True,
@@ -120,12 +136,7 @@ def check_cancellation_eligibility(
         }
 
     if customer_id is not None and order.customer_id is not None and order.customer_id != customer_id:
-        return {
-            "success": False,
-            "eligible": False,
-            "error": f"Order {normalized_id} does not belong to your account.",
-            "order_id": normalized_id,
-        }
+        return _format_account_mismatch_error(normalized_id, customer_id, db)
 
     status = (order.status or "").strip()
     status_lower = status.lower()
@@ -221,12 +232,7 @@ def check_return_eligibility(
         }
 
     if customer_id is not None and order.customer_id is not None and order.customer_id != customer_id:
-        return {
-            "success": False,
-            "eligible": False,
-            "error": f"Order {normalized_id} does not belong to your account.",
-            "order_id": normalized_id,
-        }
+        return _format_account_mismatch_error(normalized_id, customer_id, db)
 
     status = (order.status or "").strip()
     if status.lower() != "delivered":
@@ -353,12 +359,7 @@ def check_damaged_reporting_eligibility(
         }
 
     if customer_id is not None and order.customer_id is not None and order.customer_id != customer_id:
-        return {
-            "success": False,
-            "eligible": False,
-            "error": f"Order {normalized_id} does not belong to your account.",
-            "order_id": normalized_id,
-        }
+        return _format_account_mismatch_error(normalized_id, customer_id, db)
 
     status = (order.status or "").strip()
     if status.lower() != "delivered":
