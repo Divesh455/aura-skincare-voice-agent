@@ -80,6 +80,7 @@ allowed_origins = [
     "http://127.0.0.1:5173",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://aura-skincare-voice-agent-chi.vercel.app"
 ]
 if cors_origins_env:
     allowed_origins.extend([orig.strip() for orig in cors_origins_env.split(",") if orig.strip()])
